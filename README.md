@@ -15,3 +15,11 @@ Below is the commands for Unix/Linux terminal
 ```sh
 $ export GOBIN={location of the project folder}
 ```
+
+Set environment variables for COINBASE_SECRET, COINBASE_KEY, COINBASE_PASSPHRASE
+
+```sh
+$ export COINBASE_SECRET={secret}
+$ export COINBASE_KEY={key}
+$ export COINBASE_PASSPHRASE={passphrase}
+```
