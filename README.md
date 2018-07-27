@@ -9,7 +9,7 @@ Install the dependencies. Go-Gdax API implementation.
 $ go get github.com/preichenberger/go-gdax
 ```
 
-Make sure you have yourG OBIN is set.
+Make sure you have your GOBIN is set.
 Below is the commands for Unix/Linux terminal
 
 ```sh
