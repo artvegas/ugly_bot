@@ -30,11 +30,15 @@ func makeSellOrder(price string) {
 }
 
 func main() {
+	// gets credentials for the api to work
 	secret := os.Getenv("COINBASE_SECRET")
 	key := os.Getenv("COINBASE_KEY")
 	waitFlg := false
 	passphrase := os.Getenv("COINBASE_PASSPHRASE")
 
+	// connect to coinbase api, returns client
+	// which we can use to make calls to the
+	// coinbase api
 	client := gdax.NewClient(secret, key, passphrase)
 
 	client.HttpClient = &http.Client{
