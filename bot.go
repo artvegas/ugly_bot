@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	gdax "github.com/preichenberger/go-gdax"
-
-	"strconv"
 )
 
 func getTicket(client gdax.Client, ch chan string) {
