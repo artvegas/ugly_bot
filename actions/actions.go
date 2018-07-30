@@ -1,3 +1,5 @@
+// file contains all actions that a bot can do
+
 package actions
 
 import (

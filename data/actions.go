@@ -1,3 +1,4 @@
+//file contains all actions we can perform to collect/save data
 package data
 
 import (

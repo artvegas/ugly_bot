@@ -1,3 +1,5 @@
+//file contains functions to connect to db
+//file contains functions to read/write to db
 package ugly_bot_db
 
 import (
