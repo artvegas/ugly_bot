@@ -24,6 +24,8 @@ func main() {
 
 	//connect to the database first
 	db, err := ugly_bot_db.ConnectToDB()
+	//close connection after done using the program
+	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
