@@ -39,17 +39,30 @@ func main() {
 	}
 
 	ch := make(chan string)
+	orderBookCh := make(chan gdax.Book)
 	boughtAt := 0.00
-	profitPercentage := 1.00003
+	profitPercentage := 1.000003
+	lowRiskExitPercentage := 0.9999991
 	go data.GetTicket(*client, ch)
+	go data.GetOrderBook(*client, orderBookCh)
+	// for i := range orderBookCh {
+	// 	fmt.Println(i.Sequence, i.Asks, i.Bids)
+	// }
 	for i := range ch {
 		fmt.Println(i, time.Now())
 		price, err := strconv.ParseFloat(i, 64)
-		if err == nil && !waitFlg && price <= 8211.90 {
+		if err == nil && !waitFlg {
 			boughtAt = price
 			action.MakeOrder("1", db, i, "0.01")
 			waitFlg = true
 		}
+		result := fmt.Sprintf("SELLING PRICE: %f EXIT PRICE: %f  ENTERED AT PRICE: %f", (boughtAt * profitPercentage), (boughtAt * lowRiskExitPercentage), boughtAt)
+		fmt.Println(result)
+		if err == nil && waitFlg && price <= boughtAt*lowRiskExitPercentage {
+			action.MakeOrder("2", db, i, "0.01")
+			waitFlg = false
+		}
+
 		if err == nil && waitFlg && price >= boughtAt*profitPercentage {
 			action.MakeOrder("2", db, i, "0.01")
 			waitFlg = false
