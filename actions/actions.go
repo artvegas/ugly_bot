@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/preichenberger/go-gdax"
 )
 
 //puts virtual order into database
@@ -44,4 +46,29 @@ func MakeOrder(order_type string, db *sql.DB, price string, quantity string) {
 
 	result := fmt.Sprintf("Added order: TYPE [%s ORDER] QUANITY [%s BTC] PRICE [%s USD]", order_type_print, quantity, price)
 	fmt.Println(result)
+}
+
+func RecordPrice(ticker *gdax.Ticker, db *sql.DB) {
+	stmt, err := db.Prepare(`INSERT INTO btc_usd_history(
+		trade_id, price, size,
+		 time, bid, ask, volume) 
+		 VALUES(?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	string_time := ticker.Time.Time().String()
+	result, err := stmt.Exec(
+		ticker.TradeId,
+		ticker.Price,
+		ticker.Size,
+		string_time,
+		ticker.Bid,
+		ticker.Ask,
+		ticker.Volume,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	println(result.LastInsertId)
 }

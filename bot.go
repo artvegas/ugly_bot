@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
-	action "./actions"
+	actions "./actions"
 	data "./data"
 	ugly_bot_db "./database"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,7 +17,7 @@ func main() {
 	// gets credentials for the api to work
 	secret := os.Getenv("COINBASE_SECRET")
 	key := os.Getenv("COINBASE_KEY")
-	waitFlg := false
+	//waitFlg := false
 	passphrase := os.Getenv("COINBASE_PASSPHRASE")
 
 	//connect to the database first
@@ -38,35 +36,19 @@ func main() {
 		Timeout: 15 * time.Second,
 	}
 
-	ch := make(chan string)
-	orderBookCh := make(chan gdax.Book)
-	boughtAt := 0.00
-	profitPercentage := 1.000003
-	lowRiskExitPercentage := 0.9999991
-	go data.GetTicket(*client, ch)
-	go data.GetOrderBook(*client, orderBookCh)
+	ch := make(chan *gdax.Ticker)
+	//orderBookCh := make(chan *gdax.Book)
+	//boughtAt := 0.00
+	//profitPercentage := 1.000003
+	//lowRiskExitPercentage := 0.9999991
+	go data.GetTickerData(*client, ch)
+	//go data.GetOrderBook(*client, orderBookCh)
+	//go data.CollectTickerData()
 	// for i := range orderBookCh {
 	// 	fmt.Println(i.Sequence, i.Asks, i.Bids)
 	// }
 	for i := range ch {
-		fmt.Println(i, time.Now())
-		price, err := strconv.ParseFloat(i, 64)
-		if err == nil && !waitFlg {
-			boughtAt = price
-			action.MakeOrder("1", db, i, "0.01")
-			waitFlg = true
-		}
-		result := fmt.Sprintf("SELLING PRICE: %f EXIT PRICE: %f  ENTERED AT PRICE: %f", (boughtAt * profitPercentage), (boughtAt * lowRiskExitPercentage), boughtAt)
-		fmt.Println(result)
-		if err == nil && waitFlg && price <= boughtAt*lowRiskExitPercentage {
-			action.MakeOrder("2", db, i, "0.01")
-			waitFlg = false
-		}
-
-		if err == nil && waitFlg && price >= boughtAt*profitPercentage {
-			action.MakeOrder("2", db, i, "0.01")
-			waitFlg = false
-		}
+		actions.RecordPrice(i, db)
 	}
 
 }
